@@ -57,16 +57,20 @@ All configuration is done via environment variables (or a `.env` file).
 
 ### Build the image
 
+Note: Modify the vesrion in the script
+
 ```bash
-docker build -t rtsp-recorder .
+srcipts/build-docker.sh
 ```
 
 ---
 
 ### Run locally
 
+Note: Modify the vesrion in the script
+
 ```bash
-docker run --rm -it   --env-file .env   -v $(pwd)/recordings:/recordings   rtsp-recorder
+scripts/run.sh
 ```
 
 ---
@@ -74,7 +78,7 @@ docker run --rm -it   --env-file .env   -v $(pwd)/recordings:/recordings   rtsp-
 ### Run on Synology NAS
 
 ```bash
-docker run -d   --name rtsp-recorder   --restart unless-stopped   --env-file /volume1/docker/rtsp-recorder/.env   -v /volume1/video/rtsp:/recordings   rtsp-recorder
+docker run -d   --name rtsp-recorder   --restart unless-stopped   --env-file /volume1/docker/rtsp-recorder/.env   -v /volume1/video/rtsp:/recordings   rtsp-recorder:your-version-here
 ```
 
 ---
