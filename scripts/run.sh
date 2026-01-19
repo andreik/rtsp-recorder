@@ -4,4 +4,4 @@ docker run -d \
   --restart unless-stopped \
   --env-file "./.env" \
   -v "$(pwd)/recordings:/recordings" \
-  rtsp-recorder:latest
+  rtsp-recorder:version
