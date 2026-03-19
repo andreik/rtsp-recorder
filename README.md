@@ -58,28 +58,9 @@ All configuration is done via environment variables (or a `.env` file).
 
 ## Docker Usage
 
-### Build the image
-
-The build script tags the image from `git describe --tags --always`.
-If no git tags exist yet, it falls back to the current commit SHA.
-It also writes OCI image labels for the version tag and git commit SHA.
-
-```bash
-scripts/build-docker.sh
-```
-
----
-
-### Run locally
-
-The run script uses the same git-derived image tag as the build script.
-You can override it with `IMAGE_TAG=v0.3 ./scripts/run.sh` if needed.
-
-```bash
-scripts/run.sh
-```
-
 ### Create a release tag
+
+Create and push an annotated git tag:
 
 ```bash
 make release VERSION=v0.4
@@ -87,10 +68,58 @@ make release VERSION=v0.4
 
 ---
 
-### Run on Synology NAS
+### Build the image
+
+The build script tags the image from `git describe --tags --always`.
+If no git tags exist yet, it falls back to the current commit SHA.
+It also writes OCI image labels for the version tag and git commit SHA.
+Set `IMAGE_REGISTRY` to tag the image for a private registry such as Synology.
 
 ```bash
-docker run -d   --name rtsp-recorder   --restart unless-stopped   --env-file /volume1/docker/rtsp-recorder/.env   -v /volume1/video/rtsp:/recordings   rtsp-recorder:your-version-here
+./scripts/build-docker.sh
+```
+
+To tag for a Synology registry:
+
+```bash
+IMAGE_REGISTRY=<IP:PORT> ./scripts/build-docker.sh
+```
+
+---
+
+### Run locally
+
+The run script uses the same git-derived image tag as the build script.
+
+```bash
+./scripts/run.sh
+```
+
+To run a different tag:
+
+```bash
+IMAGE_TAG=v0.3 ./scripts/run.sh
+```
+
+To run from a registry-hosted image:
+
+```bash
+IMAGE_REGISTRY=<IP:PORT> ./scripts/run.sh
+```
+
+---
+
+### Run on Synology NAS
+
+Replace `192.168.68.55:5005` with your own registry address if needed.
+
+```bash
+docker run -d \
+  --name rtsp-recorder \
+  --restart unless-stopped \
+  --env-file /volume1/docker/rtsp-recorder/.env \
+  -v /volume1/video/rtsp:/recordings \
+  192.168.68.55:5005/rtsp-recorder:v0.4
 ```
 
 ---
