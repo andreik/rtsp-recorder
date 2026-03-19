@@ -1,0 +1,7 @@
+interface:
+  display_name: "Python CV"
+  short_description: "Python video analysis and CV pipeline work"
+  default_prompt: "Use $python-cv to design or implement Python computer-vision work for this recorder project."
+
+policy:
+  allow_implicit_invocation: true

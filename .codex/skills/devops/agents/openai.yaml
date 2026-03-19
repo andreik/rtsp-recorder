@@ -1,0 +1,7 @@
+interface:
+  display_name: "DevOps"
+  short_description: "Release, build, push, and deploy this recorder"
+  default_prompt: "Use $devops to release, build, push, or deploy this RTSP recorder project."
+
+policy:
+  allow_implicit_invocation: true

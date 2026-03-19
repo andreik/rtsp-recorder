@@ -1,0 +1,7 @@
+interface:
+  display_name: "RTSP Video"
+  short_description: "RTSP, ffmpeg, segments, and recorder behavior"
+  default_prompt: "Use $rtsp-video to adjust or troubleshoot the RTSP recorder's stream and ffmpeg behavior."
+
+policy:
+  allow_implicit_invocation: true
