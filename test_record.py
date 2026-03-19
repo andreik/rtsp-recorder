@@ -151,6 +151,60 @@ class TestEnsureDir:
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
 
 
+class TestCleanupOldRecordings:
+    """Tests for retention cleanup logic"""
+
+    def test_cleanup_old_recordings_removes_directories_older_than_cutoff(self, tmp_path):
+        """Test that dated directories older than the retention cutoff are removed"""
+        with patch.object(record, 'OUT_DIR', str(tmp_path)), \
+             patch.object(record, 'CAM_NAME', 'test_cam'), \
+             patch.object(record, 'RETENTION_DAYS', 30):
+            root = Path(record.OUT_DIR) / record.CAM_NAME
+            old_dir = root / "02-15-2026"
+            cutoff_dir = root / "02-16-2026"
+            recent_dir = root / "03-01-2026"
+
+            old_dir.mkdir(parents=True)
+            cutoff_dir.mkdir(parents=True)
+            recent_dir.mkdir(parents=True)
+
+            record.cleanup_old_recordings(now=datetime(2026, 3, 18, 12, 0, 0))
+
+            assert not old_dir.exists()
+            assert cutoff_dir.exists()
+            assert recent_dir.exists()
+
+    def test_cleanup_old_recordings_ignores_invalid_directory_names(self, tmp_path):
+        """Test that non-date directories are ignored"""
+        with patch.object(record, 'OUT_DIR', str(tmp_path)), \
+             patch.object(record, 'CAM_NAME', 'test_cam'), \
+             patch.object(record, 'RETENTION_DAYS', 30):
+            root = Path(record.OUT_DIR) / record.CAM_NAME
+            valid_dir = root / "02-15-2026"
+            invalid_dir = root / "manual_exports"
+
+            valid_dir.mkdir(parents=True)
+            invalid_dir.mkdir(parents=True)
+
+            record.cleanup_old_recordings(now=datetime(2026, 3, 18, 12, 0, 0))
+
+            assert not valid_dir.exists()
+            assert invalid_dir.exists()
+
+    def test_cleanup_old_recordings_noops_when_retention_disabled(self, tmp_path):
+        """Test that cleanup is skipped when retention is disabled"""
+        with patch.object(record, 'OUT_DIR', str(tmp_path)), \
+             patch.object(record, 'CAM_NAME', 'test_cam'), \
+             patch.object(record, 'RETENTION_DAYS', 0):
+            root = Path(record.OUT_DIR) / record.CAM_NAME
+            old_dir = root / "01-01-2026"
+            old_dir.mkdir(parents=True)
+
+            record.cleanup_old_recordings(now=datetime(2026, 3, 18, 12, 0, 0))
+
+            assert old_dir.exists()
+
+
 class TestDateChangeDetection:
     """Tests for date change detection logic"""
     

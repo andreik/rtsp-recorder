@@ -20,6 +20,7 @@ This project is intended to run inside **Docker**, including on **Synology NAS**
 - Copies **video and audio** (no re-encoding)
 - Tolerates imperfect RTSP timestamps
 - Automatic restart on RTSP disconnect
+- Optional retention cleanup for old recordings
 - Fully configurable via environment variables
 
 ---
@@ -50,6 +51,8 @@ All configuration is done via environment variables (or a `.env` file).
 | `OUT_DIR` | ❌ | `/recordings` | Base output directory |
 | `SEGMENT_SECONDS` | ❌ | `60` | Segment length in seconds |
 | `FFMPEG_LOGLEVEL` | ❌ | `warning` | ffmpeg log verbosity |
+| `RETENTION_DAYS` | ✅ | `0` (disabled) | Delete dated recording folders older than this many days |
+| `CLEANUP_INTERVAL_SECONDS` | ❌ | `3600` | How often retention cleanup runs |
 
 ---
 

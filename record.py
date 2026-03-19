@@ -1,8 +1,9 @@
 import os
+import shutil
 import time
 import subprocess
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -15,24 +16,58 @@ RTSP_URL = os.getenv("RTSP_URL")
 OUT_DIR = os.getenv("OUT_DIR", "/recordings")
 SEGMENT_SECONDS = int(os.getenv("SEGMENT_SECONDS", "60"))
 LOGLEVEL = os.getenv("FFMPEG_LOGLEVEL", "warning")
+RETENTION_DAYS = int(os.getenv("RETENTION_DAYS", "0"))
+CLEANUP_INTERVAL_SECONDS = int(os.getenv("CLEANUP_INTERVAL_SECONDS", "3600"))
+DATE_DIR_FORMAT = "%m-%d-%Y"
 
 if not RTSP_URL:
     raise RuntimeError("RTSP_URL is not set (check .env)")
 
 def date_dir_name() -> str:
     # MM-DD-YYYY
-    return datetime.now().strftime("%m-%d-%Y")
+    return datetime.now().strftime(DATE_DIR_FORMAT)
 
 def ensure_dir(p: Path):
     p.mkdir(parents=True, exist_ok=True)
 
+def recordings_root() -> Path:
+    return Path(OUT_DIR) / CAM_NAME
+
 def build_output_pattern(current_date: str = None) -> str:
     if current_date is None:
         current_date = date_dir_name()
-    base = Path(OUT_DIR) / CAM_NAME / current_date
+    base = recordings_root() / current_date
     ensure_dir(base)
     # d225_front_YYYYmmdd_HHMMSS.mkv
     return str(base / f"{CAM_NAME}_%Y%m%d_%H%M%S.mkv")
+
+def cleanup_old_recordings(now: datetime = None):
+    if RETENTION_DAYS <= 0:
+        return
+
+    if now is None:
+        now = datetime.now()
+
+    cutoff = now.date() - timedelta(days=RETENTION_DAYS)
+    root = recordings_root()
+    if not root.exists():
+        return
+
+    for child in root.iterdir():
+        if not child.is_dir():
+            continue
+
+        try:
+            folder_date = datetime.strptime(child.name, DATE_DIR_FORMAT).date()
+        except ValueError:
+            continue
+
+        if folder_date < cutoff:
+            try:
+                shutil.rmtree(child)
+                print(f"[{CAM_NAME}] removed old recordings: {child}")
+            except OSError as exc:
+                print(f"[{CAM_NAME}] failed to remove old recordings {child}: {exc}")
 
 def ffmpeg_cmd(current_date: str = None) -> list[str]:
     out_pattern = build_output_pattern(current_date)
@@ -63,7 +98,10 @@ def ffmpeg_cmd(current_date: str = None) -> list[str]:
 
 def run_forever():
     print(f"[{CAM_NAME}] starting")
-    print(f"[{CAM_NAME}] OUT_DIR={OUT_DIR} SEGMENT_SECONDS={SEGMENT_SECONDS}")
+    print(
+        f"[{CAM_NAME}] OUT_DIR={OUT_DIR} SEGMENT_SECONDS={SEGMENT_SECONDS} "
+        f"RETENTION_DAYS={RETENTION_DAYS}"
+    )
 
     current_date = date_dir_name()
     process_ref = {"p": None}  # Use dict to allow modification from nested function
@@ -86,8 +124,20 @@ def run_forever():
                     if process_ref["p"] and process_ref["p"].poll() is None:
                         process_ref["p"].terminate()
 
+    def cleanup_loop():
+        while not should_stop.is_set():
+            try:
+                cleanup_old_recordings()
+            except Exception as exc:
+                print(f"[{CAM_NAME}] retention cleanup failed: {exc}")
+
+            should_stop.wait(CLEANUP_INTERVAL_SECONDS)
+
     date_checker = threading.Thread(target=check_date_change, daemon=True)
     date_checker.start()
+
+    cleanup_worker = threading.Thread(target=cleanup_loop, daemon=True)
+    cleanup_worker.start()
 
     while True:
         # Check if date changed (in case we're restarting after a date change)
@@ -130,5 +180,5 @@ def run_forever():
             time.sleep(5)
 
 if __name__ == "__main__":
-    Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
+    recordings_root().mkdir(parents=True, exist_ok=True)
     run_forever()
