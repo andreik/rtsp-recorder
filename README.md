@@ -44,10 +44,10 @@ All configuration is done via environment variables (or a `.env` file).
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
+| Variable | Required | Default / Example | Description |
 |--------|---------|---------|------------|
 | `RTSP_URL` | ✅ | — | Full RTSP URL (including credentials) |
-| `RETENTION_DAYS` | ✅ | — | Delete dated recording folders older than this many days (`0` disables cleanup) |
+| `RETENTION_DAYS` | ✅ | `30` | Delete dated recording folders older than this many days (`0` disables cleanup) |
 | `CAM_NAME` | ❌ | `d225_front` | Logical camera name |
 | `OUT_DIR` | ❌ | `/recordings` | Base output directory |
 | `SEGMENT_SECONDS` | ❌ | `60` | Segment length in seconds |

@@ -23,7 +23,7 @@ DATE_DIR_FORMAT = "%m-%d-%Y"
 if not RTSP_URL:
     raise RuntimeError("RTSP_URL is not set (check .env)")
 if RETENTION_DAYS_RAW is None:
-    raise RuntimeError("RETENTION_DAYS is not set (set to 0 to disable retention)")
+    raise RuntimeError("RETENTION_DAYS is not set (set to 30 normally, or 0 to disable cleanup)")
 
 RETENTION_DAYS = int(RETENTION_DAYS_RAW)
 
