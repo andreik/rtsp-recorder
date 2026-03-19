@@ -62,6 +62,7 @@ All configuration is done via environment variables (or a `.env` file).
 
 The build script tags the image from `git describe --tags --always`.
 If no git tags exist yet, it falls back to the current commit SHA.
+It also writes OCI image labels for the version tag and git commit SHA.
 
 ```bash
 scripts/build-docker.sh
