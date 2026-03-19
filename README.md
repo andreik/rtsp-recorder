@@ -87,6 +87,23 @@ IMAGE_REGISTRY=<IP:PORT> ./scripts/build-docker.sh
 
 ---
 
+### Push the image
+
+Push the tagged image and the `latest` tag to your registry:
+
+```bash
+IMAGE_REGISTRY=<IP:PORT> ./scripts/push-docker.sh
+```
+
+Typical flow:
+
+```bash
+IMAGE_REGISTRY=<IP:PORT> ./scripts/build-docker.sh
+IMAGE_REGISTRY=<IP:PORT> ./scripts/push-docker.sh
+```
+
+---
+
 ### Run locally
 
 The run script uses the same git-derived image tag as the build script.
