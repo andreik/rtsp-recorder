@@ -82,8 +82,7 @@ scripts/run.sh
 ### Create a release tag
 
 ```bash
-git tag v0.3
-git push --tags
+make release VERSION=v0.4
 ```
 
 ---
