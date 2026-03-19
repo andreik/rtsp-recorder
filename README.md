@@ -60,20 +60,29 @@ All configuration is done via environment variables (or a `.env` file).
 
 ### Build the image
 
-Note: Modify the vesrion in the script
+The build script tags the image from `git describe --tags --always`.
+If no git tags exist yet, it falls back to the current commit SHA.
 
 ```bash
-srcipts/build-docker.sh
+scripts/build-docker.sh
 ```
 
 ---
 
 ### Run locally
 
-Note: Modify the vesrion in the script
+The run script uses the same git-derived image tag as the build script.
+You can override it with `IMAGE_TAG=v0.3 ./scripts/run.sh` if needed.
 
 ```bash
 scripts/run.sh
+```
+
+### Create a release tag
+
+```bash
+git tag v0.3
+git push --tags
 ```
 
 ---
