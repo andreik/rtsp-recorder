@@ -16,12 +16,16 @@ RTSP_URL = os.getenv("RTSP_URL")
 OUT_DIR = os.getenv("OUT_DIR", "/recordings")
 SEGMENT_SECONDS = int(os.getenv("SEGMENT_SECONDS", "60"))
 LOGLEVEL = os.getenv("FFMPEG_LOGLEVEL", "warning")
-RETENTION_DAYS = int(os.getenv("RETENTION_DAYS", "0"))
+RETENTION_DAYS_RAW = os.getenv("RETENTION_DAYS")
 CLEANUP_INTERVAL_SECONDS = int(os.getenv("CLEANUP_INTERVAL_SECONDS", "3600"))
 DATE_DIR_FORMAT = "%m-%d-%Y"
 
 if not RTSP_URL:
     raise RuntimeError("RTSP_URL is not set (check .env)")
+if RETENTION_DAYS_RAW is None:
+    raise RuntimeError("RETENTION_DAYS is not set (set to 0 to disable retention)")
+
+RETENTION_DAYS = int(RETENTION_DAYS_RAW)
 
 def date_dir_name() -> str:
     # MM-DD-YYYY

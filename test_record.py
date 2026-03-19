@@ -13,6 +13,7 @@ os.environ.setdefault('CAM_NAME', 'test_cam')
 os.environ.setdefault('OUT_DIR', '/test/recordings')
 os.environ.setdefault('SEGMENT_SECONDS', '60')
 os.environ.setdefault('FFMPEG_LOGLEVEL', 'warning')
+os.environ.setdefault('RETENTION_DAYS', '30')
 
 # Import the module to test
 import record

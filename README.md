@@ -47,11 +47,11 @@ All configuration is done via environment variables (or a `.env` file).
 | Variable | Required | Default | Description |
 |--------|---------|---------|------------|
 | `RTSP_URL` | ✅ | — | Full RTSP URL (including credentials) |
-| `CAM_NAME` | ❌ | `camera` | Logical camera name |
+| `RETENTION_DAYS` | ✅ | — | Delete dated recording folders older than this many days (`0` disables cleanup) |
+| `CAM_NAME` | ❌ | `d225_front` | Logical camera name |
 | `OUT_DIR` | ❌ | `/recordings` | Base output directory |
 | `SEGMENT_SECONDS` | ❌ | `60` | Segment length in seconds |
 | `FFMPEG_LOGLEVEL` | ❌ | `warning` | ffmpeg log verbosity |
-| `RETENTION_DAYS` | ✅ | `0` (disabled) | Delete dated recording folders older than this many days |
 | `CLEANUP_INTERVAL_SECONDS` | ❌ | `3600` | How often retention cleanup runs |
 
 ---
