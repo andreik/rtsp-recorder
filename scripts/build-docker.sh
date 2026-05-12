@@ -21,4 +21,5 @@ docker buildx build \
   --build-arg "VCS_REF=${VCS_REF}" \
   -t "${IMAGE_REF}" \
   -t "${LATEST_REF}" \
+  --push \
   .
