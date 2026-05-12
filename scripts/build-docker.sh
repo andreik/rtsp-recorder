@@ -15,11 +15,17 @@ else
   LATEST_REF="${IMAGE_NAME}:latest"
 fi
 
+CACHE_FLAGS=""
+if [ -n "${IMAGE_REGISTRY}" ]; then
+  CACHE_FLAGS="--cache-from type=registry,ref=${IMAGE_REGISTRY}/${IMAGE_NAME}:cache --cache-to type=registry,ref=${IMAGE_REGISTRY}/${IMAGE_NAME}:cache,mode=max"
+fi
+
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --build-arg "VERSION=${IMAGE_TAG}" \
   --build-arg "VCS_REF=${VCS_REF}" \
   -t "${IMAGE_REF}" \
   -t "${LATEST_REF}" \
+  ${CACHE_FLAGS} \
   --push \
   .
