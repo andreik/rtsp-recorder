@@ -127,6 +127,11 @@ def run_forever():
                     # Terminate ffmpeg so it restarts with new date
                     if process_ref["p"] and process_ref["p"].poll() is None:
                         process_ref["p"].terminate()
+                        try:
+                            process_ref["p"].wait(timeout=10)
+                        except subprocess.TimeoutExpired:
+                            print(f"[{CAM_NAME}] ffmpeg did not exit after SIGTERM, sending SIGKILL")
+                            process_ref["p"].kill()
 
     def cleanup_loop():
         while not should_stop.is_set():
